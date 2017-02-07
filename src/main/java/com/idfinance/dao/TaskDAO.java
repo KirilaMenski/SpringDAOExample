@@ -10,6 +10,8 @@ public interface TaskDAO {
 	
 	void deleteTask(Task task);
 	
+	Task getTaskById(int id);
+	
 	List<Task> getAllTask();
 
 }

@@ -10,6 +10,12 @@ public class Pipeline {
 	public Pipeline(){
 		
 	}
+	
+	public Pipeline(String description, Task task) {
+		super();
+		this.description = description;
+		this.task = task;
+	}
 
 	public Pipeline(int id, String description, Task task, Transition transition) {
 		super();

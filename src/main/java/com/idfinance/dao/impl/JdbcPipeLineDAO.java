@@ -9,26 +9,22 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import com.idfinance.dao.TaskDAO;
+import com.idfinance.dao.PipeLineDAO;
+import com.idfinance.model.Pipeline;
 import com.idfinance.model.Task;
 
-public class JdbcTaskDAO implements TaskDAO {
-
+public class JdbcPipeLineDAO implements PipeLineDAO {
+	
 	private DataSource dataSource;
 
-	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
-
-	public void createTask(Task task) {
-		String query = "INSERT INTO task (name, description, action) VALUES (?, ?, ?)";
+	public void createPipeLine(Pipeline pipeline) {
+		String query = "INSERT INTO pipeline (description, tas_id) VALUES (?, ?)";
 		Connection conn = null;
 		try {
 			conn = dataSource.getConnection();
 			PreparedStatement ps = conn.prepareStatement(query);
-			ps.setString(1, task.getName());
-			ps.setString(2, task.getDescription());
-			ps.setString(3, task.getAction());
+			ps.setString(1, pipeline.getDescription());
+			ps.setObject(2, pipeline.getTask());
 			ps.executeUpdate();
 			ps.close();
 		} catch (SQLException e) {
@@ -41,15 +37,16 @@ public class JdbcTaskDAO implements TaskDAO {
 				}
 			}
 		}
+		
 	}
 
-	public void deleteTask(Task task) {
-		String query = "DELETE FROM task WHERE id = ?";
+	public void deletePipeLine(Pipeline pipeline) {
+		String query = "DELETE FROM pipeline WHERE id = ?";
 		Connection conn = null;
 		try {
 			conn = dataSource.getConnection();
 			PreparedStatement ps = conn.prepareStatement(query);
-			ps.setInt(1, task.getId());
+			ps.setInt(1, pipeline.getId());
 			ps.executeUpdate();
 			ps.close();
 		} catch (SQLException e) {
@@ -62,42 +59,11 @@ public class JdbcTaskDAO implements TaskDAO {
 				}
 			}
 		}
-
+		
 	}
 
-	public List<Task> getAllTask() {
-		String query = "SELECT * FROM task";
-		Connection conn = null;
-		List<Task> tasks = new ArrayList<Task>();
-
-		try {
-			conn = dataSource.getConnection();
-			PreparedStatement ps = conn.prepareStatement(query);
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-				Task task = new Task(rs.getInt("id"), rs.getString("name"), rs.getString("description"),
-						rs.getString("action"));
-				tasks.add(task);
-			}
-			rs.close();
-			ps.close();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		} finally {
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) {
-
-				}
-			}
-		}
-
-		return tasks;
-	}
-
-	public Task getTaskById(int id) {
-		String sql = "SELECT * FROM task WHERE id = ?";
+	public Pipeline getPipeLineById(int id) {
+		String sql = "SELECT * FROM pipeline WHERE id = ?";
 
 		Connection conn = null;
 
@@ -105,15 +71,14 @@ public class JdbcTaskDAO implements TaskDAO {
 			conn = dataSource.getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setInt(1, id);
-			Task task = null;
+			Pipeline pipeline = null;
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
-				task = new Task(rs.getInt("id"), rs.getString("name"), rs.getString("description"),
-						rs.getString("action"));
+				pipeline = new Pipeline(rs.getString("description"), rs.getObject("task_id", Task.class));
 			}
 			rs.close();
 			ps.close();
-			return task;
+			return pipeline;
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -124,6 +89,36 @@ public class JdbcTaskDAO implements TaskDAO {
 				}
 			}
 		}
+	}
+
+	public List<Pipeline> getAllPipeLine() {
+		String query = "SELECT * FROM pipeline";
+		Connection conn = null;
+		List<Pipeline> pipelines = new ArrayList<Pipeline>();
+
+		try {
+			conn = dataSource.getConnection();
+			PreparedStatement ps = conn.prepareStatement(query);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				Pipeline pipeline = new Pipeline(rs.getString("description"), rs.getObject("task_id", Task.class));
+				pipelines.add(pipeline);
+			}
+			rs.close();
+			ps.close();
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close();
+				} catch (SQLException e) {
+
+				}
+			}
+		}
+
+		return pipelines;
 	}
 
 }

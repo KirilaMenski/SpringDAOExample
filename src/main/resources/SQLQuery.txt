@@ -1,0 +1,5 @@
+~~~~~~~~~~~~Task table~~~~~~~~~~~~~~~~
+CREATE TABLE task (id int(255) NOT NULL AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), description TEXT, action VARCHAR(255));
+
+~~~~~~~~~~~~Pipeline table~~~~~~~~~~~~~~~~
+CREATE TABLE pipeline (id int(255) NOT NULL AUTO_INCREMENT PRIMARY KEY, description TEXT, task_id int(255), FOREIGN KEY (task_id) REFERENCES task(id));

@@ -7,4 +7,8 @@ http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	
+	<bean id="pipelineDAO" class="com.idfinance.dao.impl.JdbcPipeLineDAO">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
 </beans>
